@@ -8,6 +8,7 @@
 
 #include <map>
 #include <array>
+#include <algorithm>
 #include <bitset>
 #include <thread>
 #include <mutex>

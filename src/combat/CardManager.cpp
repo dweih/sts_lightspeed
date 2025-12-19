@@ -7,6 +7,7 @@
 
 #include "game/GameContext.h"
 #include "game/Card.h"
+#include <algorithm>
 
 #include "sim/search/BattleScumSearcher2.h"
 
