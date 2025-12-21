@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 4.0)
 project(
         sts_lightspeed
         VERSION 0.1
