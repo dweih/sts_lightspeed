@@ -15,6 +15,10 @@
 #include "sim/SimHelpers.h"
 #include "sim/PrintHelpers.h"
 #include "game/Game.h"
+#include "combat/BattleContext.h"
+#include "combat/CardInstance.h"
+#include "sim/search/Action.h"
+#include "sim/search/BattleScumSearcher2.h"
 
 #include "slaythespire.h"
 
@@ -827,6 +831,97 @@ PYBIND11_MODULE(slaythespire, m) {
         .value("CIRCLET", RelicId::CIRCLET)
         .value("RED_CIRCLET", RelicId::RED_CIRCLET)
         .value("INVALID", RelicId::INVALID);
+
+    // *** BattleContext and related bindings for Stage 2 ***
+
+    // Outcome enum for battle results
+    pybind11::enum_<Outcome>(m, "Outcome")
+        .value("UNDECIDED", Outcome::UNDECIDED)
+        .value("PLAYER_VICTORY", Outcome::PLAYER_VICTORY)
+        .value("PLAYER_LOSS", Outcome::PLAYER_LOSS);
+
+    // CardInstance - individual cards in combat
+    pybind11::class_<CardInstance> cardInstance(m, "CardInstance");
+    cardInstance.def(pybind11::init<>())
+        .def(pybind11::init<CardId, bool>())
+        .def_readonly("id", &CardInstance::id)
+        .def_readonly("upgraded", &CardInstance::upgraded)
+        .def_readonly("cost", &CardInstance::cost)
+        .def_readonly("cost_for_turn", &CardInstance::costForTurn)
+        .def_readonly("unique_id", &CardInstance::uniqueId)
+        .def_readonly("retain", &CardInstance::retain)
+        .def("__repr__", [](const CardInstance &ci) {
+            std::ostringstream oss;
+            oss << "<CardInstance " << ci.getName();
+            if (ci.upgraded) oss << "+";
+            oss << ">";
+            return oss.str();
+        });
+
+    // BattleContext - combat state
+    pybind11::class_<BattleContext> battleContext(m, "BattleContext");
+    battleContext.def(pybind11::init<>())
+        .def("init", static_cast<void (BattleContext::*)(const GameContext&)>(&BattleContext::init),
+             "Initialize battle from GameContext")
+        .def("init", static_cast<void (BattleContext::*)(const GameContext&, MonsterEncounter)>(&BattleContext::init),
+             "Initialize battle from GameContext with specific encounter")
+
+        // Outcome
+        .def_readwrite("outcome", &BattleContext::outcome)
+
+        // Player state properties
+        .def_property("player_hp",
+            [](const BattleContext &bc) { return bc.player.curHp; },
+            [](BattleContext &bc, int hp) { bc.player.curHp = hp; })
+        .def_property("player_max_hp",
+            [](const BattleContext &bc) { return bc.player.maxHp; },
+            [](BattleContext &bc, int hp) { bc.player.maxHp = hp; })
+        .def_property("player_block",
+            [](const BattleContext &bc) { return bc.player.block; },
+            [](BattleContext &bc, int block) { bc.player.block = block; })
+        .def_property("player_energy",
+            [](const BattleContext &bc) { return bc.player.energy; },
+            [](BattleContext &bc, int energy) { bc.player.energy = energy; })
+
+        // Card piles (read-only accessors)
+        .def_property_readonly("cards_in_hand",
+            [](const BattleContext &bc) { return bc.cards.cardsInHand; })
+        .def("get_hand_card",
+            [](const BattleContext &bc, int idx) -> CardInstance {
+                if (idx < 0 || idx >= bc.cards.cardsInHand) {
+                    throw pybind11::index_error("Hand card index out of range");
+                }
+                return bc.cards.hand[idx];
+            })
+        .def_property_readonly("draw_pile_size",
+            [](const BattleContext &bc) { return bc.cards.drawPile.size(); })
+        .def_property_readonly("discard_pile_size",
+            [](const BattleContext &bc) { return bc.cards.discardPile.size(); })
+        .def_property_readonly("exhaust_pile_size",
+            [](const BattleContext &bc) { return bc.cards.exhaustPile.size(); })
+
+        // Monster info
+        .def_property_readonly("monster_count",
+            [](const BattleContext &bc) { return bc.monsters.monsterCount; })
+        .def("get_monster_hp",
+            [](const BattleContext &bc, int idx) -> int {
+                if (idx < 0 || idx >= bc.monsters.monsterCount) {
+                    throw pybind11::index_error("Monster index out of range");
+                }
+                return bc.monsters.arr[idx].curHp;
+            })
+
+        // Turn info
+        .def_readwrite("turn", &BattleContext::turn)
+        .def_readwrite("ascension", &BattleContext::ascension)
+
+        // Random playout execution
+        .def("execute_random_playout", [](BattleContext &bc) {
+            // Use BattleScumSearcher2 for proper random playout
+            search::BattleScumSearcher2 searcher(bc);
+            std::vector<search::Action> actionStack;
+            searcher.playoutRandom(bc, actionStack);
+        }, "Execute random playout until battle ends");
 
 #ifdef VERSION_INFO
     m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);

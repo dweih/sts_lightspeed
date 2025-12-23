@@ -45,3 +45,7 @@ target_link_directories(small-test PRIVATE json::nlohmann_json)
 target_include_directories(small-test PUBLIC include)
 target_include_directories(small-test PUBLIC json/include)
 target_include_directories(small-test PUBLIC bindings)
+
+add_executable(test-random-playout test_random_playout.cpp ${sts_lightspeed_SOURCES})
+target_include_directories(test-random-playout PUBLIC include)
+target_include_directories(test-random-playout PUBLIC json/include)
