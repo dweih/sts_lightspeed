@@ -10,6 +10,12 @@ file (GLOB_RECURSE sts_lightspeed_SOURCES CONFIGURE_DEPENDS "src/*.cpp")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS  "-Wno-shift-count-overflow -O3")
 
+# Static link MinGW runtime libraries on Windows to avoid DLL dependencies
+if(WIN32 AND MINGW)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
+endif()
+
 add_subdirectory(json)
 add_subdirectory(pybind11)
 
@@ -17,6 +23,11 @@ pybind11_add_module(slaythespire bindings/slaythespire.cpp bindings/bindings-uti
 target_include_directories(slaythespire PUBLIC include)
 target_include_directories(slaythespire PUBLIC json/single_include)
 target_include_directories(slaythespire PUBLIC bindings)
+
+# Static link MinGW runtime for Python module to avoid DLL dependencies
+if(WIN32 AND MINGW)
+    target_link_options(slaythespire PRIVATE -static-libgcc -static-libstdc++ -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive)
+endif()
 
 
 add_executable(main apps/main.cpp ${sts_lightspeed_SOURCES})

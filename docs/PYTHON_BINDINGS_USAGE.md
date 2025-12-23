@@ -571,32 +571,31 @@ sts.play()
 
 **Solution:**
 
-**Windows with MinGW:**
-The compiled module needs MinGW runtime DLLs. Add MinGW's bin directory to your PATH:
+**Modern Build (Recommended):**
+The current CMakeLists.txt uses static linking for MinGW runtime libraries, making the `.pyd` module self-contained with no external DLL dependencies. Simply rebuild:
 
 ```bash
-# Temporarily (for current session)
-set PATH=%PATH%;C:\mingw64\bin
-
-# Or in PowerShell
-$env:PATH += ";C:\mingw64\bin"
-
-# Permanently (System Settings)
-# Add to System Environment Variables in Control Panel
+cd build
+cmake ..
+cmake --build . --target slaythespire
 ```
 
-Common MinGW locations:
-- `C:\mingw64\bin`
-- `C:\msys64\mingw64\bin`
-- `C:\Program Files\mingw-w64\...\mingw64\bin`
+The module will work without any PATH configuration or additional DLLs.
 
-**Alternative Solutions:**
-1. Use Microsoft Visual C++ compiler instead of MinGW (requires reconfiguring CMake)
-2. Copy required DLLs to the build directory:
-   - `libgcc_s_seh-1.dll`
-   - `libstdc++-6.dll`
-   - `libwinpthread-1.dll`
-3. Run Python from MSYS2/MinGW terminal where PATH is already configured
+**Legacy/Alternative Solutions:**
+If you're using an older build or different compiler:
+
+1. **Add MinGW bin to PATH** (if using dynamic linking):
+   ```powershell
+   $env:PATH += ";C:\msys64\ucrt64\bin"
+   ```
+
+2. **Use Microsoft Visual C++** instead of MinGW:
+   - Reconfigure CMake with MSVC toolchain
+   - MSVC runtime is typically pre-installed on Windows
+
+3. **Manual DLL copy** (last resort):
+   Copy `libgcc_s_seh-1.dll`, `libwinpthread-1.dll`, `libstdc++-6.dll` from your MinGW installation to the `build/` directory
 
 **Linux/Mac:**
 1. Ensure C++ runtime libraries are available (`libstdc++`)
