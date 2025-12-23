@@ -915,6 +915,32 @@ PYBIND11_MODULE(slaythespire, m) {
         .def_readwrite("turn", &BattleContext::turn)
         .def_readwrite("ascension", &BattleContext::ascension)
 
+        // Card pile manipulation (for state initialization)
+        .def("clear_hand", [](BattleContext &bc) {
+            bc.cards.cardsInHand = 0;
+        }, "Clear all cards from hand")
+        .def("add_card_to_hand", [](BattleContext &bc, CardId card_id, bool upgraded) {
+            if (bc.cards.cardsInHand >= CardManager::MAX_HAND_SIZE) {
+                throw pybind11::value_error("Hand is full");
+            }
+            bc.cards.hand[bc.cards.cardsInHand] = CardInstance(card_id, upgraded);
+            bc.cards.cardsInHand++;
+        }, "Add a card to hand")
+
+        // Monster state manipulation (for state initialization)
+        .def("set_monster_hp", [](BattleContext &bc, int idx, int hp) {
+            if (idx < 0 || idx >= bc.monsters.monsterCount) {
+                throw pybind11::index_error("Monster index out of range");
+            }
+            bc.monsters.arr[idx].curHp = hp;
+        }, "Set monster HP")
+        .def("set_monster_block", [](BattleContext &bc, int idx, int block) {
+            if (idx < 0 || idx >= bc.monsters.monsterCount) {
+                throw pybind11::index_error("Monster index out of range");
+            }
+            bc.monsters.arr[idx].block = block;
+        }, "Set monster block")
+
         // Random playout execution
         .def("execute_random_playout", [](BattleContext &bc) {
             // Use BattleScumSearcher2 for proper random playout
