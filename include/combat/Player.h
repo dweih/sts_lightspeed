@@ -101,6 +101,7 @@ namespace sts {
 
         [[nodiscard]] bool hasStatusRuntime(PlayerStatus s) const;
         [[nodiscard]] int getStatusRuntime(PlayerStatus s) const; // for values that are stored in the map only
+        void setStatusRuntime(PlayerStatus s, int amount); // for Python bindings and runtime dispatch
 
         // for statuses classified as debuff only
         template <PlayerStatus> [[nodiscard]] bool wasJustApplied() const;

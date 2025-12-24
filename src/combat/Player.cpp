@@ -65,6 +65,47 @@ int Player::getStatusRuntime(PlayerStatus s) const {
     }
 }
 
+void Player::setStatusRuntime(PlayerStatus s, int amount) {
+    // Handle special direct member variables
+    switch (s) {
+        case PS::ARTIFACT:
+            artifact = amount;
+            return;
+        case PS::DEXTERITY:
+            dexterity = amount;
+            return;
+        case PS::FOCUS:
+            focus = amount;
+            return;
+        case PS::STRENGTH:
+            strength = amount;
+            return;
+        default:
+            break;
+    }
+
+    // Update statusBits
+    int idx = static_cast<int>(s);
+    if (amount > 0) {
+        if (idx < 64) {
+            statusBits0 |= (1ULL << idx);
+        } else {
+            statusBits1 |= (1ULL << (idx-64));
+        }
+        // Set in statusMap
+        statusMap[s] = static_cast<std::int16_t>(amount);
+    } else {
+        // Remove from statusBits
+        if (idx < 64) {
+            statusBits0 &= ~(1ULL << idx);
+        } else {
+            statusBits1 &= ~(1ULL << (idx-64));
+        }
+        // Remove from statusMap
+        statusMap.erase(s);
+    }
+}
+
 void Player::gainBlock(BattleContext &bc, int amount) {
     if (amount <= 0) {
         return;

@@ -142,6 +142,120 @@ bool Monster::hasStatusInternal(MonsterStatus s) const {
     return statusBits & (1ULL << (int)s);
 }
 
+void Monster::setStatusInternal(MonsterStatus s, int amount) {
+    // Update statusBits
+    if (amount > 0) {
+        statusBits |= (1ULL << (int)s);
+    } else {
+        statusBits &= ~(1ULL << (int)s);
+    }
+
+    // Update member variables based on status type
+    switch (s) {
+        case MS::STRENGTH:
+            strength = amount;
+            return;
+
+        case MS::ARTIFACT:
+            artifact = static_cast<std::int8_t>(amount);
+            return;
+
+        case MS::BLOCK_RETURN:
+            blockReturn = static_cast<std::int8_t>(amount);
+            return;
+
+        case MS::CHOKED:
+            choked = static_cast<std::int8_t>(amount);
+            return;
+
+        case MS::CORPSE_EXPLOSION:
+            corpseExplosion = static_cast<std::int8_t>(amount);
+            return;
+
+        case MS::LOCK_ON:
+            lockOn = static_cast<std::int8_t>(amount);
+            return;
+
+        case MS::MARK:
+            mark = static_cast<std::int16_t>(amount);
+            return;
+
+        case MS::METALLICIZE:
+            metallicize = static_cast<std::int8_t>(amount);
+            return;
+
+        case MS::PLATED_ARMOR:
+            platedArmor = static_cast<std::int8_t>(amount);
+            return;
+
+        case MS::POISON:
+            poison = static_cast<std::int8_t>(amount);
+            return;
+
+        case MS::REGEN:
+            regen = static_cast<std::int8_t>(amount);
+            return;
+
+        case MS::SHACKLED:
+            shackled = static_cast<std::int8_t>(amount);
+            return;
+
+        case MS::VULNERABLE:
+            vulnerable = amount;
+            return;
+
+        case MS::WEAK:
+            weak = amount;
+            return;
+
+        // Unique powers group 1
+        case MS::ANGRY:
+        case MS::BEAT_OF_DEATH:
+        case MS::CURIOSITY:
+        case MS::CURL_UP:
+        case MS::ENRAGE:
+        case MS::FADING:
+        case MS::FLIGHT:
+        case MS::GENERIC_STRENGTH_UP:
+        case MS::INTANGIBLE:
+        case MS::MALLEABLE:
+        case MS::MODE_SHIFT:
+        case MS::RITUAL:
+        case MS::SLOW:
+        case MS::SPORE_CLOUD:
+        case MS::THIEVERY:
+        case MS::THORNS:
+        case MS::TIME_WARP:
+            uniquePower0 = amount;
+            return;
+
+        // Unique powers group 2
+        case MS::INVINCIBLE:
+        case MS::REACTIVE:
+        case MS::SHARP_HIDE:
+            uniquePower1 = static_cast<std::int16_t>(amount);
+            return;
+
+        // Boolean powers - only exist in statusBits, no storage
+        case MS::ASLEEP:
+        case MS::BARRICADE:
+        case MS::MINION:
+        case MS::MINION_LEADER:
+        case MS::PAINFUL_STABS:
+        case MS::REGROW:
+        case MS::SHIFTING:
+        case MS::STASIS:
+            // Already updated statusBits above
+            return;
+
+        default:
+#ifdef sts_asserts
+            assert(false);
+#endif
+            return;
+    }
+}
+
 int Monster::getStatusInternal(MonsterStatus s) const {
     if (s == MS::STRENGTH) {
         return strength;

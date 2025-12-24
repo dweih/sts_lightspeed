@@ -840,6 +840,151 @@ PYBIND11_MODULE(slaythespire, m) {
         .value("PLAYER_VICTORY", Outcome::PLAYER_VICTORY)
         .value("PLAYER_LOSS", Outcome::PLAYER_LOSS);
 
+    // MonsterStatus enum for monster powers/statuses
+    pybind11::enum_<MonsterStatus>(m, "MonsterStatus")
+        .value("ARTIFACT", MonsterStatus::ARTIFACT)
+        .value("BLOCK_RETURN", MonsterStatus::BLOCK_RETURN)
+        .value("CHOKED", MonsterStatus::CHOKED)
+        .value("CORPSE_EXPLOSION", MonsterStatus::CORPSE_EXPLOSION)
+        .value("LOCK_ON", MonsterStatus::LOCK_ON)
+        .value("MARK", MonsterStatus::MARK)
+        .value("METALLICIZE", MonsterStatus::METALLICIZE)
+        .value("PLATED_ARMOR", MonsterStatus::PLATED_ARMOR)
+        .value("POISON", MonsterStatus::POISON)
+        .value("REGEN", MonsterStatus::REGEN)
+        .value("SHACKLED", MonsterStatus::SHACKLED)
+        .value("STRENGTH", MonsterStatus::STRENGTH)
+        .value("VULNERABLE", MonsterStatus::VULNERABLE)
+        .value("WEAK", MonsterStatus::WEAK)
+        .value("ANGRY", MonsterStatus::ANGRY)
+        .value("BEAT_OF_DEATH", MonsterStatus::BEAT_OF_DEATH)
+        .value("CURIOSITY", MonsterStatus::CURIOSITY)
+        .value("CURL_UP", MonsterStatus::CURL_UP)
+        .value("ENRAGE", MonsterStatus::ENRAGE)
+        .value("FADING", MonsterStatus::FADING)
+        .value("FLIGHT", MonsterStatus::FLIGHT)
+        .value("GENERIC_STRENGTH_UP", MonsterStatus::GENERIC_STRENGTH_UP)
+        .value("INTANGIBLE", MonsterStatus::INTANGIBLE)
+        .value("MALLEABLE", MonsterStatus::MALLEABLE)
+        .value("MODE_SHIFT", MonsterStatus::MODE_SHIFT)
+        .value("RITUAL", MonsterStatus::RITUAL)
+        .value("SLOW", MonsterStatus::SLOW)
+        .value("SPORE_CLOUD", MonsterStatus::SPORE_CLOUD)
+        .value("THIEVERY", MonsterStatus::THIEVERY)
+        .value("THORNS", MonsterStatus::THORNS)
+        .value("TIME_WARP", MonsterStatus::TIME_WARP)
+        .value("INVINCIBLE", MonsterStatus::INVINCIBLE)
+        .value("REACTIVE", MonsterStatus::REACTIVE)
+        .value("SHARP_HIDE", MonsterStatus::SHARP_HIDE)
+        .value("ASLEEP", MonsterStatus::ASLEEP)
+        .value("BARRICADE", MonsterStatus::BARRICADE)
+        .value("MINION", MonsterStatus::MINION)
+        .value("MINION_LEADER", MonsterStatus::MINION_LEADER)
+        .value("PAINFUL_STABS", MonsterStatus::PAINFUL_STABS)
+        .value("REGROW", MonsterStatus::REGROW)
+        .value("SHIFTING", MonsterStatus::SHIFTING)
+        .value("STASIS", MonsterStatus::STASIS)
+        .value("INVALID", MonsterStatus::INVALID)
+        .export_values();
+
+    // PlayerStatus enum for powers/statuses (complete list)
+    pybind11::enum_<PlayerStatus>(m, "PlayerStatus")
+        // JustApplied statuses
+        .value("INVALID", PlayerStatus::INVALID)
+        .value("DOUBLE_DAMAGE", PlayerStatus::DOUBLE_DAMAGE)
+        .value("DRAW_REDUCTION", PlayerStatus::DRAW_REDUCTION)
+        .value("FRAIL", PlayerStatus::FRAIL)
+        .value("INTANGIBLE", PlayerStatus::INTANGIBLE)
+        .value("VULNERABLE", PlayerStatus::VULNERABLE)
+        .value("WEAK", PlayerStatus::WEAK)
+        // Debuffs
+        .value("BIAS", PlayerStatus::BIAS)
+        .value("CONFUSED", PlayerStatus::CONFUSED)
+        .value("CONSTRICTED", PlayerStatus::CONSTRICTED)
+        .value("ENTANGLED", PlayerStatus::ENTANGLED)
+        .value("FASTING", PlayerStatus::FASTING)
+        .value("HEX", PlayerStatus::HEX)
+        .value("LOSE_DEXTERITY", PlayerStatus::LOSE_DEXTERITY)
+        .value("LOSE_STRENGTH", PlayerStatus::LOSE_STRENGTH)
+        .value("NO_BLOCK", PlayerStatus::NO_BLOCK)
+        .value("NO_DRAW", PlayerStatus::NO_DRAW)
+        .value("WRAITH_FORM", PlayerStatus::WRAITH_FORM)
+        // Bool powers
+        .value("BARRICADE", PlayerStatus::BARRICADE)
+        .value("BLASPHEMER", PlayerStatus::BLASPHEMER)
+        .value("CORRUPTION", PlayerStatus::CORRUPTION)
+        .value("ELECTRO", PlayerStatus::ELECTRO)
+        .value("SURROUNDED", PlayerStatus::SURROUNDED)
+        .value("MASTER_REALITY", PlayerStatus::MASTER_REALITY)
+        .value("PEN_NIB", PlayerStatus::PEN_NIB)
+        .value("WRATH_NEXT_TURN", PlayerStatus::WRATH_NEXT_TURN)
+        // Counter powers
+        .value("AMPLIFY", PlayerStatus::AMPLIFY)
+        .value("BLUR", PlayerStatus::BLUR)
+        .value("BUFFER", PlayerStatus::BUFFER)
+        .value("COLLECT", PlayerStatus::COLLECT)
+        .value("DOUBLE_TAP", PlayerStatus::DOUBLE_TAP)
+        .value("DUPLICATION", PlayerStatus::DUPLICATION)
+        .value("ECHO_FORM", PlayerStatus::ECHO_FORM)
+        .value("FREE_ATTACK_POWER", PlayerStatus::FREE_ATTACK_POWER)
+        .value("REBOUND", PlayerStatus::REBOUND)
+        .value("MANTRA", PlayerStatus::MANTRA)
+        // Intensity powers
+        .value("ACCURACY", PlayerStatus::ACCURACY)
+        .value("AFTER_IMAGE", PlayerStatus::AFTER_IMAGE)
+        .value("BATTLE_HYMN", PlayerStatus::BATTLE_HYMN)
+        .value("BRUTALITY", PlayerStatus::BRUTALITY)
+        .value("BURST", PlayerStatus::BURST)
+        .value("COMBUST", PlayerStatus::COMBUST)
+        .value("CREATIVE_AI", PlayerStatus::CREATIVE_AI)
+        .value("DARK_EMBRACE", PlayerStatus::DARK_EMBRACE)
+        .value("DEMON_FORM", PlayerStatus::DEMON_FORM)
+        .value("DEVA", PlayerStatus::DEVA)
+        .value("DEVOTION", PlayerStatus::DEVOTION)
+        .value("DRAW_CARD_NEXT_TURN", PlayerStatus::DRAW_CARD_NEXT_TURN)
+        .value("ENERGIZED", PlayerStatus::ENERGIZED)
+        .value("ENVENOM", PlayerStatus::ENVENOM)
+        .value("ESTABLISHMENT", PlayerStatus::ESTABLISHMENT)
+        .value("EVOLVE", PlayerStatus::EVOLVE)
+        .value("FEEL_NO_PAIN", PlayerStatus::FEEL_NO_PAIN)
+        .value("FIRE_BREATHING", PlayerStatus::FIRE_BREATHING)
+        .value("FLAME_BARRIER", PlayerStatus::FLAME_BARRIER)
+        .value("FOCUS", PlayerStatus::FOCUS)
+        .value("FORESIGHT", PlayerStatus::FORESIGHT)
+        .value("HELLO_WORLD", PlayerStatus::HELLO_WORLD)
+        .value("INFINITE_BLADES", PlayerStatus::INFINITE_BLADES)
+        .value("JUGGERNAUT", PlayerStatus::JUGGERNAUT)
+        .value("LIKE_WATER", PlayerStatus::LIKE_WATER)
+        .value("LOOP", PlayerStatus::LOOP)
+        .value("MAGNETISM", PlayerStatus::MAGNETISM)
+        .value("MAYHEM", PlayerStatus::MAYHEM)
+        .value("METALLICIZE", PlayerStatus::METALLICIZE)
+        .value("NEXT_TURN_BLOCK", PlayerStatus::NEXT_TURN_BLOCK)
+        .value("NOXIOUS_FUMES", PlayerStatus::NOXIOUS_FUMES)
+        .value("OMEGA", PlayerStatus::OMEGA)
+        .value("PANACHE", PlayerStatus::PANACHE)
+        .value("PHANTASMAL", PlayerStatus::PHANTASMAL)
+        .value("PLATED_ARMOR", PlayerStatus::PLATED_ARMOR)
+        .value("RAGE", PlayerStatus::RAGE)
+        .value("REGEN", PlayerStatus::REGEN)
+        .value("RITUAL", PlayerStatus::RITUAL)
+        .value("RUPTURE", PlayerStatus::RUPTURE)
+        .value("SADISTIC", PlayerStatus::SADISTIC)
+        .value("STATIC_DISCHARGE", PlayerStatus::STATIC_DISCHARGE)
+        .value("THORNS", PlayerStatus::THORNS)
+        .value("THOUSAND_CUTS", PlayerStatus::THOUSAND_CUTS)
+        .value("TOOLS_OF_THE_TRADE", PlayerStatus::TOOLS_OF_THE_TRADE)
+        .value("VIGOR", PlayerStatus::VIGOR)
+        .value("WAVE_OF_THE_HAND", PlayerStatus::WAVE_OF_THE_HAND)
+        // Duration powers
+        .value("EQUILIBRIUM", PlayerStatus::EQUILIBRIUM)
+        .value("ARTIFACT", PlayerStatus::ARTIFACT)
+        .value("DEXTERITY", PlayerStatus::DEXTERITY)
+        .value("STRENGTH", PlayerStatus::STRENGTH)
+        // Special
+        .value("THE_BOMB", PlayerStatus::THE_BOMB)
+        .export_values();
+
     // CardInstance - individual cards in combat
     pybind11::class_<CardInstance> cardInstance(m, "CardInstance");
     cardInstance.def(pybind11::init<>())
@@ -927,6 +1072,27 @@ PYBIND11_MODULE(slaythespire, m) {
             bc.cards.cardsInHand++;
         }, "Add a card to hand")
 
+        .def("clear_draw_pile", [](BattleContext &bc) {
+            bc.cards.drawPile.clear();
+        }, "Clear draw pile")
+        .def("add_card_to_draw_pile", [](BattleContext &bc, CardId card_id, bool upgraded) {
+            bc.cards.drawPile.push_back(CardInstance(card_id, upgraded));
+        }, "Add a card to draw pile")
+
+        .def("clear_discard_pile", [](BattleContext &bc) {
+            bc.cards.discardPile.clear();
+        }, "Clear discard pile")
+        .def("add_card_to_discard_pile", [](BattleContext &bc, CardId card_id, bool upgraded) {
+            bc.cards.discardPile.push_back(CardInstance(card_id, upgraded));
+        }, "Add a card to discard pile")
+
+        .def("clear_exhaust_pile", [](BattleContext &bc) {
+            bc.cards.exhaustPile.clear();
+        }, "Clear exhaust pile")
+        .def("add_card_to_exhaust_pile", [](BattleContext &bc, CardId card_id, bool upgraded) {
+            bc.cards.exhaustPile.push_back(CardInstance(card_id, upgraded));
+        }, "Add a card to exhaust pile")
+
         // Monster state manipulation (for state initialization)
         .def("set_monster_hp", [](BattleContext &bc, int idx, int hp) {
             if (idx < 0 || idx >= bc.monsters.monsterCount) {
@@ -940,6 +1106,37 @@ PYBIND11_MODULE(slaythespire, m) {
             }
             bc.monsters.arr[idx].block = block;
         }, "Set monster block")
+
+        // Generic monster status methods
+        .def("get_monster_status", [](const BattleContext &bc, int idx, MonsterStatus status) {
+            if (idx < 0 || idx >= bc.monsters.monsterCount) {
+                throw pybind11::index_error("Monster index out of range");
+            }
+            return bc.monsters.arr[idx].getStatusInternal(status);
+        }, "Get monster status value")
+        .def("has_monster_status", [](const BattleContext &bc, int idx, MonsterStatus status) {
+            if (idx < 0 || idx >= bc.monsters.monsterCount) {
+                throw pybind11::index_error("Monster index out of range");
+            }
+            return bc.monsters.arr[idx].hasStatusInternal(status);
+        }, "Check if monster has status")
+        .def("set_monster_status", [](BattleContext &bc, int idx, MonsterStatus status, int amount) {
+            if (idx < 0 || idx >= bc.monsters.monsterCount) {
+                throw pybind11::index_error("Monster index out of range");
+            }
+            bc.monsters.arr[idx].setStatusInternal(status, amount);
+        }, "Set monster status value")
+
+        // Generic player status methods
+        .def("get_player_status", [](const BattleContext &bc, PlayerStatus status) {
+            return bc.player.getStatusRuntime(status);
+        }, "Get player status value")
+        .def("has_player_status", [](const BattleContext &bc, PlayerStatus status) {
+            return bc.player.hasStatusRuntime(status);
+        }, "Check if player has status")
+        .def("set_player_status", [](BattleContext &bc, PlayerStatus status, int amount) {
+            bc.player.setStatusRuntime(status, amount);
+        }, "Set player status value")
 
         // Random playout execution
         .def("execute_random_playout", [](BattleContext &bc) {

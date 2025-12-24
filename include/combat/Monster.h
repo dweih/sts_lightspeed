@@ -102,6 +102,7 @@ namespace sts {
 
         [[nodiscard]] bool hasStatusInternal(MonsterStatus s) const; // only to be used by printLogs methods
         [[nodiscard]] int getStatusInternal(MonsterStatus s) const; // only to be used by printLogs methods
+        void setStatusInternal(MonsterStatus s, int amount); // for Python bindings and runtime dispatch
 
 
         template <MonsterStatus> [[nodiscard]] bool hasStatus() const;
