@@ -85,8 +85,8 @@ def node_to_dict(node) -> Dict[str, Any]:
         if node.curses_gained:
             data['event']['curses_gained'] = [card_to_dict(c) for c in node.curses_gained]
 
-    # Add treasure data
-    if node.chest_size != sts.ChestSize.SMALL:  # Assuming SMALL is default/invalid
+    # Add treasure data - check against INVALID, not SMALL (which is a valid size)
+    if node.chest_size != sts.ChestSize.INVALID:
         data['chest'] = {
             'size': str(node.chest_size),
             'relics': [str(r) for r in node.chest_relics]

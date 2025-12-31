@@ -99,19 +99,8 @@ RunProgression ProgressionDataCollector::collectRun(CharacterClass cc, std::uint
             }
 
             case ScreenState::TREASURE_ROOM: {
-                // Only record if we haven't recorded this screen recently
-                if (lastRecordedScreen != ScreenState::TREASURE_ROOM) {
-                    NodeRecord node;
-                    node.floorNum = gc.floorNum;
-                    node.x = gc.curMapNodeX;
-                    node.y = gc.curMapNodeY;
-                    node.roomType = gc.curRoom;
-                    recordNode(gc, node);
-                    progression.nodes.push_back(node);
-                    lastRecordedScreen = ScreenState::TREASURE_ROOM;
-                }
-
-                // Open chest
+                // Don't record here - the relic isn't generated until we open the chest
+                // We'll record this at the REWARDS screen that follows
                 gc.chooseTreasureRoomOption(true);
                 break;
             }
@@ -241,6 +230,15 @@ void ProgressionDataCollector::recordRewards(const GameContext &gc, NodeRecord &
         node.encounter = gc.info.encounter;
     }
 
+    // Record treasure room data
+    if (gc.curRoom == Room::TREASURE) {
+        node.chestSize = gc.info.chestSize;
+        // Record relics from rewards
+        for (int i = 0; i < rewards.relicCount; ++i) {
+            node.chestRelics.push_back(rewards.relics[i]);
+        }
+    }
+
     // Record all card rewards
     for (int i = 0; i < rewards.cardRewardCount; ++i) {
         std::vector<Card> cardReward;
@@ -254,9 +252,6 @@ void ProgressionDataCollector::recordRewards(const GameContext &gc, NodeRecord &
             node.cardRewards.push_back(cardReward);
         }
     }
-
-    // Could also record relics and potions if needed
-    // For now focusing on card rewards
 }
 
 void ProgressionDataCollector::recordShop(const GameContext &gc, NodeRecord &node) {

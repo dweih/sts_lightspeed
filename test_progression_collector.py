@@ -43,7 +43,7 @@ def test_single_run():
                     print(f"      - {card.id}")
 
         if node.shop:
-            print(f"  Shop:")
+            print("  Shop:")
             print(f"    Cards available: {len(node.shop.cards)}")
             print(f"    Remove cost: {node.shop.remove_cost}")
             # Show first few shop cards
@@ -102,7 +102,7 @@ def test_batch_collection():
     if failed > 0:
         print(f"  Skipped {failed} failed/incomplete runs")
 
-    print(f"\n=== Batch Results ===")
+    print("\n=== Batch Results ===")
     victories = sum(1 for r in runs if r.outcome == sts.GameOutcome.PLAYER_VICTORY)
     print(f"Total runs: {num_runs}")
     print(f"Victories: {victories}")
