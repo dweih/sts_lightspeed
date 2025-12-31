@@ -19,6 +19,7 @@
 #include "combat/CardInstance.h"
 #include "sim/search/Action.h"
 #include "sim/search/BattleScumSearcher2.h"
+#include "sim/ProgressionDataCollector.h"
 
 #include "slaythespire.h"
 
@@ -607,6 +608,23 @@ PYBIND11_MODULE(slaythespire, m) {
         .value("WREATH_OF_FLAME", CardId::WREATH_OF_FLAME)
         .value("WRITHE", CardId::WRITHE)
         .value("ZAP", CardId::ZAP);
+
+    pybind11::enum_<Event>(m, "Event")
+        .value("INVALID", Event::INVALID)
+        .value("NEOW", Event::NEOW)
+        .value("OMINOUS_FORGE", Event::OMINOUS_FORGE)
+        .value("DESIGNER_IN_SPIRE", Event::DESIGNER_IN_SPIRE)
+        .value("DUPLICATOR", Event::DUPLICATOR)
+        .value("BONFIRE_SPIRITS", Event::BONFIRE_SPIRITS)
+        .value("WHEEL_OF_CHANGE", Event::WHEEL_OF_CHANGE)
+        .export_values();
+
+    pybind11::enum_<ChestSize>(m, "ChestSize")
+        .value("SMALL", ChestSize::SMALL)
+        .value("MEDIUM", ChestSize::MEDIUM)
+        .value("LARGE", ChestSize::LARGE)
+        .value("INVALID", ChestSize::INVALID)
+        .export_values();
 
     pybind11::enum_<MonsterEncounter> meEnum(m, "MonsterEncounter");
     meEnum.value("INVALID", ME::INVALID)
@@ -1218,6 +1236,65 @@ PYBIND11_MODULE(slaythespire, m) {
             std::vector<search::Action> actionStack;
             searcher.playoutRandom(bc, actionStack);
         }, "Execute random playout until battle ends");
+
+    // Progression Data Collector bindings
+    pybind11::class_<progression::ShopData>(m, "ShopData")
+        .def_property_readonly("cards", [](const progression::ShopData &sd) {
+            return std::vector<Card>(sd.cards, sd.cards + 7);
+        })
+        .def_property_readonly("card_prices", [](const progression::ShopData &sd) {
+            return std::vector<int>(sd.cardPrices, sd.cardPrices + 7);
+        })
+        .def_property_readonly("relics", [](const progression::ShopData &sd) {
+            return std::vector<RelicId>(sd.relics, sd.relics + 3);
+        })
+        .def_property_readonly("relic_prices", [](const progression::ShopData &sd) {
+            return std::vector<int>(sd.relicPrices, sd.relicPrices + 3);
+        })
+        .def_property_readonly("potions", [](const progression::ShopData &sd) {
+            return std::vector<Potion>(sd.potions, sd.potions + 3);
+        })
+        .def_property_readonly("potion_prices", [](const progression::ShopData &sd) {
+            return std::vector<int>(sd.potionPrices, sd.potionPrices + 3);
+        })
+        .def_readonly("remove_cost", &progression::ShopData::removeCost);
+
+    pybind11::class_<progression::NodeRecord>(m, "NodeRecord")
+        .def_readonly("floor_num", &progression::NodeRecord::floorNum)
+        .def_readonly("x", &progression::NodeRecord::x)
+        .def_readonly("y", &progression::NodeRecord::y)
+        .def_readonly("room_type", &progression::NodeRecord::roomType)
+        .def_readonly("encounter", &progression::NodeRecord::encounter)
+        .def_readonly("card_rewards", &progression::NodeRecord::cardRewards)
+        .def_readonly("shop", &progression::NodeRecord::shop)
+        .def_readonly("event_type", &progression::NodeRecord::eventType)
+        .def_readonly("cards_offered", &progression::NodeRecord::cardsOffered)
+        .def_readonly("relics_offered", &progression::NodeRecord::relicsOffered)
+        .def_readonly("curses_gained", &progression::NodeRecord::cursesGained)
+        .def_readonly("option_chosen", &progression::NodeRecord::optionChosen)
+        .def_readonly("chest_size", &progression::NodeRecord::chestSize)
+        .def_readonly("chest_relics", &progression::NodeRecord::chestRelics)
+        .def_property_readonly("boss_relics", [](const progression::NodeRecord &nr) {
+            return std::vector<RelicId>(nr.bossRelics, nr.bossRelics + 3);
+        });
+
+    pybind11::class_<progression::RunProgression>(m, "RunProgression")
+        .def_readonly("seed", &progression::RunProgression::seed)
+        .def_readonly("character_class", &progression::RunProgression::characterClass)
+        .def_readonly("ascension", &progression::RunProgression::ascension)
+        .def_readonly("outcome", &progression::RunProgression::outcome)
+        .def_readonly("act_reached", &progression::RunProgression::actReached)
+        .def_readonly("floor_reached", &progression::RunProgression::floorReached)
+        .def_readonly("nodes", &progression::RunProgression::nodes);
+
+    pybind11::class_<progression::ProgressionDataCollector>(m, "ProgressionDataCollector")
+        .def(pybind11::init<>())
+        .def(pybind11::init<unsigned int>())
+        .def("collect_run", &progression::ProgressionDataCollector::collectRun,
+             "Collect progression data for a single run",
+             pybind11::arg("character_class"),
+             pybind11::arg("seed"),
+             pybind11::arg("ascension"));
 
 #ifdef VERSION_INFO
     m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);

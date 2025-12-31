@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 #include "constants/RelicPools.h"
 #include "constants/CardPools.h"
@@ -841,7 +842,19 @@ void GameContext::transitionToMapNode(int mapNodeX) {
             break;
         }
 
+        case Room::NONE:
+        case Room::INVALID:
+            // These can occur during transitions or at game start
+            // Just regain control to advance the game state
+            regainControl();
+            break;
+
         default:
+            std::cerr << "ERROR: Unhandled room type in transitionToMapNode!" << std::endl;
+            std::cerr << "  curRoom = " << static_cast<int>(curRoom) << std::endl;
+            std::cerr << "  floorNum = " << floorNum << std::endl;
+            std::cerr << "  act = " << act << std::endl;
+            std::cerr << "  screenState = " << static_cast<int>(screenState) << std::endl;
             assert(false);
     }
 
