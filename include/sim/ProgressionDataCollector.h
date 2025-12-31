@@ -66,6 +66,9 @@ struct NodeRecord {
     // For BOSS nodes (boss relic rewards)
     RelicId bossRelics[3] = {RelicId::INVALID, RelicId::INVALID, RelicId::INVALID};
 
+    // For REST nodes (campfire)
+    std::vector<Card> upgradeableCards;
+
     NodeRecord() = default;
 };
 
@@ -102,6 +105,9 @@ private:
 
     // Helper: Record treasure room data
     void recordTreasure(const GameContext &gc, NodeRecord &node);
+
+    // Helper: Record rest site data
+    void recordRest(const GameContext &gc, NodeRecord &node);
 
     // Helper: Record boss relics
     void recordBossRelics(const GameContext &gc, NodeRecord &node);

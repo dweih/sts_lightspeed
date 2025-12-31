@@ -8,6 +8,7 @@
 #include "game/Shop.h"
 #include "sim/search/GameAction.h"
 #include <algorithm>
+#include <set>
 
 namespace sts {
 namespace progression {
@@ -93,7 +94,19 @@ RunProgression ProgressionDataCollector::collectRun(CharacterClass cc, std::uint
             }
 
             case ScreenState::REST_ROOM: {
-                // Skip rest for now (could implement later)
+                // Record rest site with upgradeable cards
+                if (lastRecordedScreen != ScreenState::REST_ROOM) {
+                    NodeRecord node;
+                    node.floorNum = gc.floorNum;
+                    node.x = gc.curMapNodeX;
+                    node.y = gc.curMapNodeY;
+                    node.roomType = gc.curRoom;
+                    recordNode(gc, node);
+                    progression.nodes.push_back(node);
+                    lastRecordedScreen = ScreenState::REST_ROOM;
+                }
+
+                // Don't rest or smith, just leave
                 gc.regainControl();
                 break;
             }
@@ -208,6 +221,10 @@ void ProgressionDataCollector::recordNode(GameContext &gc, NodeRecord &node) {
             recordShop(gc, node);
             break;
 
+        case ScreenState::REST_ROOM:
+            recordRest(gc, node);
+            break;
+
         case ScreenState::TREASURE_ROOM:
             recordTreasure(gc, node);
             break;
@@ -286,6 +303,23 @@ void ProgressionDataCollector::recordTreasure(const GameContext &gc, NodeRecord 
 
     // The relic would be in the rewards container after opening
     // For now, we'll record it when we see the rewards screen
+}
+
+void ProgressionDataCollector::recordRest(const GameContext &gc, NodeRecord &node) {
+    // Record unique cards that can be upgraded (only one entry per card type)
+    // We use a set to track which cards we've already added
+    std::set<std::pair<CardId, bool>> seenCards;
+
+    for (int i = 0; i < gc.deck.size(); ++i) {
+        const auto &card = gc.deck.cards[i];
+        if (card.canUpgrade()) {
+            auto key = std::make_pair(card.getId(), card.getUpgraded());
+            if (seenCards.find(key) == seenCards.end()) {
+                seenCards.insert(key);
+                node.upgradeableCards.push_back(card);
+            }
+        }
+    }
 }
 
 void ProgressionDataCollector::recordBossRelics(const GameContext &gc, NodeRecord &node) {

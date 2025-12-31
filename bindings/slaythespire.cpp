@@ -1276,7 +1276,8 @@ PYBIND11_MODULE(slaythespire, m) {
         .def_readonly("chest_relics", &progression::NodeRecord::chestRelics)
         .def_property_readonly("boss_relics", [](const progression::NodeRecord &nr) {
             return std::vector<RelicId>(nr.bossRelics, nr.bossRelics + 3);
-        });
+        })
+        .def_readonly("upgradeable_cards", &progression::NodeRecord::upgradeableCards);
 
     pybind11::class_<progression::RunProgression>(m, "RunProgression")
         .def_readonly("seed", &progression::RunProgression::seed)

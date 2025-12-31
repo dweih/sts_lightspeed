@@ -14,7 +14,8 @@ def card_to_dict(card) -> Dict[str, Any]:
     """Convert Card to dictionary"""
     return {
         'id': str(card.id),
-        'upgraded': card.upgraded
+        'upgraded': card.upgraded,
+        'rarity': str(card.rarity)
     }
 
 def shop_to_dict(shop) -> Dict[str, Any]:
@@ -96,6 +97,10 @@ def node_to_dict(node) -> Dict[str, Any]:
     if any(r != sts.RelicId.INVALID for r in node.boss_relics):
         data['boss_relics'] = [str(r) for r in node.boss_relics if r != sts.RelicId.INVALID]
 
+    # Add rest site upgradeable cards
+    if node.upgradeable_cards:
+        data['upgradeable_cards'] = [card_to_dict(c) for c in node.upgradeable_cards]
+
     return data
 
 def run_to_dict(run) -> Dict[str, Any]:
@@ -155,7 +160,7 @@ def main():
 
     # Configuration
     config = {
-        'num_runs': 100,  # Number of runs to collect
+        'num_runs': 10,  # Number of runs to collect
         'ascension': 0,
         'characters': [
             sts.CharacterClass.IRONCLAD,
